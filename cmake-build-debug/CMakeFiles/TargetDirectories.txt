@@ -1,0 +1,3 @@
+D:/HOC_TAP/Pro_Software_Dev/ZOOrk-20250522/ZOOrk/cmake-build-debug/CMakeFiles/ZOOrk.dir
+D:/HOC_TAP/Pro_Software_Dev/ZOOrk-20250522/ZOOrk/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/HOC_TAP/Pro_Software_Dev/ZOOrk-20250522/ZOOrk/cmake-build-debug/CMakeFiles/rebuild_cache.dir
