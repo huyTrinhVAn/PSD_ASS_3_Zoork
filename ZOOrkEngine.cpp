@@ -1,10 +1,13 @@
-//
-// Created by Richard Skarbez on 5/7/23.
-//
-
 #include "ZOOrkEngine.h"
+#include "Player.h"
+#include "Location.h"
+#include "Passage.h"
+#include "NullPassage.h"
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 #include <algorithm>
-#include <utility>
 
 ZOOrkEngine::ZOOrkEngine(std::shared_ptr<Room> start) {
     player = Player::instance();
@@ -20,42 +23,37 @@ void ZOOrkEngine::run() {
         std::getline(std::cin, input);
 
         std::vector<std::string> words = tokenizeString(input);
+        if (words.empty()) continue;
         std::string command = words[0];
         std::vector<std::string> arguments(words.begin() + 1, words.end());
 
         if (command == "go") {
             handleGoCommand(arguments);
-        } else if ((command == "look") || (command == "inspect")) {
+        } else if (command == "look" || command == "inspect") {
             handleLookCommand(arguments);
-        } else if ((command == "take") || (command == "get")) {
+        } else if (command == "take" || command == "get") {
             handleTakeCommand(arguments);
         } else if (command == "drop") {
             handleDropCommand(arguments);
         } else if (command == "quit") {
             handleQuitCommand(arguments);
         } else {
-            std::cout << "I don't understand that command.\n";
+            std::cout << "I don't understand that command." << std::endl;
         }
     }
 }
 
 void ZOOrkEngine::handleGoCommand(std::vector<std::string> arguments) {
+    if (arguments.empty()) return;
+    std::string arg = arguments[0];
     std::string direction;
-    if (arguments[0] == "n" || arguments[0] == "north") {
-        direction = "north";
-    } else if (arguments[0] == "s" || arguments[0] == "south") {
-        direction = "south";
-    } else if (arguments[0] == "e" || arguments[0] == "east") {
-        direction = "east";
-    } else if (arguments[0] == "w" || arguments[0] == "west") {
-        direction = "west";
-    } else if (arguments[0] == "u" || arguments[0] == "up") {
-        direction = "up";
-    } else if (arguments[0] == "d" || arguments[0] == "down") {
-        direction = "down";
-    } else {
-        direction = arguments[0];
-    }
+    if (arg == "n" || arg == "north")      direction = "north";
+    else if (arg == "s" || arg == "south") direction = "south";
+    else if (arg == "e" || arg == "east")  direction = "east";
+    else if (arg == "w" || arg == "west")  direction = "west";
+    else if (arg == "u" || arg == "up")    direction = "up";
+    else if (arg == "d" || arg == "down")  direction = "down";
+    else direction = arg;
 
     Room* currentRoom = player->getCurrentRoom();
     auto passage = currentRoom->getPassage(direction);
@@ -64,26 +62,44 @@ void ZOOrkEngine::handleGoCommand(std::vector<std::string> arguments) {
 }
 
 void ZOOrkEngine::handleLookCommand(std::vector<std::string> arguments) {
-    // To be implemented
-    std::cout << "This functionality is not yet enabled.\n";
+    Room* current = player->getCurrentRoom();
+    // Describe current room if no target
+    if (arguments.empty()) {
+        std::cout << current->getDescription() << std::endl;
+        return;
+    }
+    // Otherwise treat target as direction
+    std::string target = arguments[0];
+    std::string dir;
+    if (target == "n" || target == "north")      dir = "north";
+    else if (target == "s" || target == "south") dir = "south";
+    else if (target == "e" || target == "east")  dir = "east";
+    else if (target == "w" || target == "west")  dir = "west";
+    else if (target == "u" || target == "up")    dir = "up";
+    else if (target == "d" || target == "down")  dir = "down";
+    else dir = target;
+
+    auto passage = current->getPassage(dir);
+    if (dynamic_cast<NullPassage*>(passage.get()) == nullptr) {
+        std::cout << passage->getDescription() << std::endl;
+    } else {
+        std::cout << "You don't see " << target << " here." << std::endl;
+    }
 }
 
 void ZOOrkEngine::handleTakeCommand(std::vector<std::string> arguments) {
-    // To be implemented
-    std::cout << "This functionality is not yet enabled.\n";
+    std::cout << "This functionality is not yet enabled." << std::endl;
 }
 
 void ZOOrkEngine::handleDropCommand(std::vector<std::string> arguments) {
-    // To be implemented
-    std::cout << "This functionality is not yet enabled.\n";
+    std::cout << "This functionality is not yet enabled." << std::endl;
 }
 
 void ZOOrkEngine::handleQuitCommand(std::vector<std::string> arguments) {
+    std::cout << "Are you sure you want to QUIT?" << std::endl << "> ";
     std::string input;
-    std::cout << "Are you sure you want to QUIT?\n> ";
-    std::cin >> input;
+    std::getline(std::cin, input);
     std::string quitStr = makeLowercase(input);
-
     if (quitStr == "y" || quitStr == "yes") {
         gameOver = true;
     }
@@ -93,17 +109,13 @@ std::vector<std::string> ZOOrkEngine::tokenizeString(const std::string &input) {
     std::vector<std::string> tokens;
     std::stringstream ss(input);
     std::string token;
-
     while (std::getline(ss, token, ' ')) {
         tokens.push_back(makeLowercase(token));
     }
-
     return tokens;
 }
 
 std::string ZOOrkEngine::makeLowercase(std::string input) {
-    std::string output = std::move(input);
-    std::transform(output.begin(), output.end(), output.begin(), ::tolower);
-
-    return output;
+    std::transform(input.begin(), input.end(), input.begin(), ::tolower);
+    return input;
 }
