@@ -1,43 +1,31 @@
-//
-// Created by Richard Skarbez on 5/7/23.
-//
-
+// ===== File: Room.h =====
 #ifndef ZOORK_ROOM_H
 #define ZOORK_ROOM_H
+
 #include <memory>
-#include "Character.h"
-#include "RoomDefaultEnterCommand.h"
-#include "Item.h"
-#include "Location.h"
 #include <map>
+#include <vector>
+#include <string>
+#include "Location.h"
+#include "Item.h"
 
 class Passage;
-
-class Room : public Location
-{
+class Room : public Location {
 public:
-    Room(const std::string &, const std::string &);
+    Room(const std::string& name, const std::string& desc);
+    Room(const std::string& name, const std::string& desc, std::shared_ptr<Command> cmd);
 
-    Room(const std::string &, const std::string &, std::shared_ptr<Command>);
-
-    //    void addItem(Item*);
-    //    void removeItem(const std::string&);
-    //    Item* getItem(const std::string&);
-    //    Item* retrieveItem(const std::string&);
-    //    void addCharacter(Character*);
-    //    void removeCharacter(const std::string&);
-    //    Character* getCharacter(const std::string&);
-
-    void addPassage(const std::string &, std::shared_ptr<Passage>);
-
+    void addPassage(const std::string& dir, std::shared_ptr<Passage> p);
+    std::shared_ptr<Passage> getPassage(const std::string& dir);
     void removePassage(const std::string &);
-
-    std::shared_ptr<Passage> getPassage(const std::string &);
+    void addItem(std::shared_ptr<Item> item);
+    std::shared_ptr<Item> removeItem(const std::string& name);
+    std::shared_ptr<Item> getItem(const std::string& name) const;
+    std::vector<std::shared_ptr<Item>> getItems() const;
 
 protected:
-    //    std::vector<Item*> items;
-    //    std::vector<Character*> characters;
     std::map<std::string, std::shared_ptr<Passage>> passageMap;
+    std::vector<std::shared_ptr<Item>> items;
 };
 
 #endif // ZOORK_ROOM_H

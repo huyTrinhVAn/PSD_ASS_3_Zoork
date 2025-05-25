@@ -1,7 +1,4 @@
-//
-// Created by Richard Skarbez on 5/7/23.
-//
-
+// ===== File: ZOOrkEngine.h =====
 #ifndef ZOORK_ZOORKENGINE_H
 #define ZOORK_ZOORKENGINE_H
 
@@ -13,30 +10,25 @@
 #include <string>
 #include <vector>
 #include <memory>
-class ZOOrkEngine
-{
-public:
-    ZOOrkEngine(std::shared_ptr<Room>);
 
+class ZOOrkEngine {
+public:
+    explicit ZOOrkEngine(std::shared_ptr<Room> start);
     void run();
 
 private:
     bool gameOver = false;
-    Player *player;
+    Player* player;
 
-    void handleGoCommand(std::vector<std::string>);
+    void handleGoCommand(const std::vector<std::string>& args);
+    void handleLookCommand(const std::vector<std::string>& args);
+    void handleTakeCommand(const std::vector<std::string>& args);
+    void handleDropCommand(const std::vector<std::string>& args);
+    void handleInventoryCommand();
+    void handleQuitCommand(const std::vector<std::string>& args);
 
-    void handleLookCommand(std::vector<std::string>);
-
-    void handleTakeCommand(std::vector<std::string>);
-
-    void handleDropCommand(std::vector<std::string>);
-
-    void handleQuitCommand(std::vector<std::string>);
-
-    static std::vector<std::string> tokenizeString(const std::string &);
-
-    static std::string makeLowercase(std::string);
+    static std::vector<std::string> tokenizeString(const std::string& input);
+    static std::string makeLowercase(std::string s);
 };
 
 #endif // ZOORK_ZOORKENGINE_H

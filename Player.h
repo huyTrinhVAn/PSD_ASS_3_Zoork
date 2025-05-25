@@ -1,41 +1,28 @@
-//
-// Created by Richard Skarbez on 5/7/23.
-//
-#include <memory>
+// ===== File: Player.h =====
 #ifndef ZOORK_PLAYER_H
 #define ZOORK_PLAYER_H
 
-#include "Character.h"
-#include "Location.h"
-#include "NullRoom.h"
+#include "Room.h"
+#include "Item.h"
+#include <vector>
+#include <memory>
 
-class Player : public Character
-{
+class Player {
 public:
-    static Player *instance()
-    {
-        // Note: lazy instantiation of the singleton Player object
-        if (!playerInstance)
-        {
-            playerInstance = new Player();
-        }
-        return Player::playerInstance;
-    }
+    static Player* instance();
+    void setCurrentRoom(Room* room);
+    Room* getCurrentRoom() const;
 
-    void setCurrentRoom(Room *);
-
-    Room *getCurrentRoom() const;
-
-    Player(const Player &) = delete;
-
-    Player &operator=(const Player &) = delete;
+    bool addToInventory(std::shared_ptr<Item> item);
+    std::shared_ptr<Item> removeFromInventory(const std::string& name);
+    std::shared_ptr<Item> getItemFromInventory(const std::string& name) const;
+    const std::vector<std::shared_ptr<Item>>& getInventory() const;
 
 private:
-    static Player *playerInstance;
-    Room *currentRoom;
-
-    Player() : Character("You", "You are a person, alike in dignity to any other, but uniquely you."),
-               currentRoom(new NullRoom()) {}
+    Player();
+    static Player* playerInstance;
+    Room* currentRoom{nullptr};
+    std::vector<std::shared_ptr<Item>> inventory;
 };
 
 #endif // ZOORK_PLAYER_H
