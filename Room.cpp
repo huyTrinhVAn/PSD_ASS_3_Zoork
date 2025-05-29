@@ -1,34 +1,45 @@
-//
-// Created by Richard Skarbez on 5/7/23.
-//
-
-#include "NullPassage.h"
+// ===== File: Room.cpp =====
 #include "Room.h"
-
-#include <utility>
-
-
-Room::Room(const std::string &n, const std::string &d) : Location(n, d) {
-    enterCommand = std::make_shared<RoomDefaultEnterCommand>(this);
+#include "NullPassage.h"
+#include <iostream>
+#include "RoomDefaultEnterCommand.h"
+Room::Room(const std::string& n, const std::string& d) : Location(n, d) {
+    setEnterCommand(std::make_shared<RoomDefaultEnterCommand>(this));
 }
 
-Room::Room(const std::string &n, const std::string &d, std::shared_ptr<Command> c) : Location(n, d, std::move(c)) {}
+Room::Room(const std::string& n, const std::string& d, std::shared_ptr<Command> c)
+    : Location(n, d, std::move(c)) {}
 
-void Room::addPassage(const std::string &direction, std::shared_ptr<Passage> p) {
-    passageMap[direction] = std::move(p);
+void Room::addPassage(const std::string& dir, std::shared_ptr<Passage> p) {
+    passageMap[dir] = std::move(p);
 }
 
-void Room::removePassage(const std::string &direction) {
-    if (passageMap.contains(direction)) {
-        passageMap.erase(direction);
+std::shared_ptr<Passage> Room::getPassage(const std::string& dir) {
+    if (passageMap.count(dir)) return passageMap[dir];
+    std::cout << "It is impossible to go " << dir << "!" << std::endl;
+    return std::make_shared<NullPassage>(this);
+}
+
+void Room::addItem(std::shared_ptr<Item> item) {
+    if (item) items.push_back(item);
+}
+
+std::shared_ptr<Item> Room::removeItem(const std::string& name) {
+    for (auto it = items.begin(); it != items.end(); ++it) {
+        if ((*it)->getName() == name) {
+            auto i = *it;
+            items.erase(it);
+            return i;
+        }
     }
+    return nullptr;
 }
 
-std::shared_ptr<Passage> Room::getPassage(const std::string &direction) {
-    if (passageMap.contains(direction)) {
-        return passageMap[direction];
-    } else {
-        std::cout << "It is impossible to go " << direction << "!\n";
-        return std::make_shared<NullPassage>(this);
-    }
+std::shared_ptr<Item> Room::getItem(const std::string& name) const {
+    for (auto& it : items) if (it->getName() == name) return it;
+    return nullptr;
+}
+
+std::vector<std::shared_ptr<Item>> Room::getItems() const {
+    return items;
 }
